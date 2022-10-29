@@ -33,7 +33,10 @@ public class ShopController {
      */
     @GetMapping("/{id}")
     public Result queryShopById(@PathVariable("id") Long id) {
-        return Result.ok(shopService.getById(id));
+        //直接调用数据库
+        //return Result.ok(shopService.getById(id));
+        //改写为先调用Redis
+        return shopService.queryById(id);
     }
 
     /**
