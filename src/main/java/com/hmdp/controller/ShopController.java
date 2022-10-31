@@ -59,8 +59,11 @@ public class ShopController {
      */
     @PutMapping
     public Result updateShop(@RequestBody Shop shop) {
+        if (shop.getId() == null) {
+            return Result.fail("店铺id不能为空");
+        }
         // 写入数据库
-        shopService.updateById(shop);
+        shopService.updateByIds(shop);
         return Result.ok();
     }
 

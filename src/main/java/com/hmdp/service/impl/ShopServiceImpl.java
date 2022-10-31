@@ -12,7 +12,9 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 
-import static com.hmdp.utils.RedisConstants.CACHE_SHOP_KEY;
+import java.util.concurrent.TimeUnit;
+
+import static com.hmdp.utils.RedisConstants.*;
 
 /**
  * <p>
@@ -51,9 +53,23 @@ public class ShopServiceImpl extends ServiceImpl<ShopMapper, Shop> implements IS
 		if (shop == null){
 			return Result.fail("店铺不存在！");
 		}
-		//6.存在，写入redis
-		stringRedisTemplate.opsForValue().set(key,JSONUtil.toJsonStr(shop));
+		//6.存在，写入redis, 并设置超时时间
+		stringRedisTemplate.opsForValue().set(key,JSONUtil.toJsonStr(shop),CACHE_SHOP_TTL, TimeUnit.MINUTES);
 		//7.返回
 		return Result.ok(shop);
+	}
+	
+	/**
+	 * @Description 根据id修改店铺(Redis改写)
+	 * @Param [shop]
+	 * @return void
+	 */
+	@Override
+	public void updateByIds(Shop shop) {
+		//1.先修改数据库
+		updateById(shop);
+		//2.再删除缓存
+		String key = CACHE_SHOP_KEY + shop.getId();
+		stringRedisTemplate.opsForValue().getOperations().delete(key);
 	}
 }

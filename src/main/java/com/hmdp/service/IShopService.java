@@ -20,4 +20,11 @@ public interface IShopService extends IService<Shop> {
 	 * @return com.hmdp.entity.Shop
 	 */
 	Result queryById(Long id);
+	
+	/**
+	 * @Description 根据id修改店铺(Redis改写)
+	 * @Param [shop]
+	 * @return void
+	 */
+	void updateByIds(Shop shop);
 }

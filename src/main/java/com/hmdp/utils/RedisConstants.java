@@ -5,6 +5,7 @@ public class RedisConstants {
     //Redis Key前缀
     static String HEAD = "hmdp:";
     public static final String LOGIN_CODE_KEY = HEAD + "login:code:";
+    //单位(分钟),在后面增加 TimeUnit.MINUTES
     public static final Long LOGIN_CODE_TTL = 2L;
     public static final String LOGIN_USER_KEY = HEAD +"login:token:";
     public static final Long LOGIN_USER_TTL = 36000L;
