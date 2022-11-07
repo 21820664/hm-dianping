@@ -7,6 +7,7 @@ import com.hmdp.entity.Shop;
 import com.hmdp.mapper.ShopMapper;
 import com.hmdp.service.IShopService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.hmdp.utils.CacheClient;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
@@ -30,6 +31,9 @@ public class ShopServiceImpl extends ServiceImpl<ShopMapper, Shop> implements IS
 	@Resource
 	private StringRedisTemplate stringRedisTemplate;
 	
+	@Resource
+	private CacheClient cacheClient;
+	
 	/**
 	 * @Description 根据商铺id查询商铺(Redis改写)
 	 * @Param [id]
@@ -37,32 +41,23 @@ public class ShopServiceImpl extends ServiceImpl<ShopMapper, Shop> implements IS
 	 */
 	@Override
 	public Result queryById(Long id) {
+		// 解决缓存穿透
+		//Shop shop = cacheClient.queryWithPassThrough(CACHE_SHOP_KEY, id, Shop.class, this::getById, CACHE_SHOP_TTL, TimeUnit.MINUTES);
 		
-		String key = CACHE_SHOP_KEY + id;
-		//1.从redis查询商铺缓存(使用Hash更方便,但为了练习此处使用String)
-		String shopJson = stringRedisTemplate.opsForValue().get(key);
-		//2.判断是否存在(命中)[空值为false,跳过]
-		if (StrUtil.isNotBlank(shopJson)){
-			Shop shop = JSONUtil.toBean(shopJson,Shop.class);
-			return Result.ok(shop);
-		}
-		//3.存在("")，判断是否为空值
-		if(shopJson != null){
+		// 互斥锁解决缓存击穿
+		 Shop shop = cacheClient.queryWithMutex(CACHE_SHOP_KEY, id, Shop.class, this::getById, CACHE_SHOP_TTL, TimeUnit.MINUTES);
+		
+		// 逻辑过期解决缓存击穿
+		// Shop shop = cacheClient
+		//         .queryWithLogicalExpire(CACHE_SHOP_KEY, id, Shop.class, this::getById, 20L, TimeUnit.SECONDS);
+		
+		if (shop == null) {
 			return Result.fail("店铺不存在！");
 		}
-		//4.不存在(null)，根据id查询数据库
-		Shop shop = getById(id);
-		//5.不存在，返回错误
-		if (shop == null){
-			//将空值写入redis,并缩短TTL时间
-			stringRedisTemplate.opsForValue().set(key,"",CACHE_NULL_TTL, TimeUnit.MINUTES);
-			return Result.fail("店铺不存在！");
-		}
-		//6.存在，写入redis, 并设置超时时间
-		stringRedisTemplate.opsForValue().set(key,JSONUtil.toJsonStr(shop),CACHE_SHOP_TTL, TimeUnit.MINUTES);
-		//7.返回
+		// 7.返回
 		return Result.ok(shop);
 	}
+	
 	
 	/**
 	 * @Description 根据id修改店铺(Redis改写)
