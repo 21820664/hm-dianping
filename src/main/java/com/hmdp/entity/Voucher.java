@@ -54,12 +54,12 @@ public class Voucher implements Serializable {
     private String rules;
 
     /**
-     * 支付金额
+     * 支付金额(分)
      */
     private Long payValue;
 
     /**
-     * 抵扣金额
+     * 抵扣金额(分)
      */
     private Long actualValue;
 
@@ -69,7 +69,7 @@ public class Voucher implements Serializable {
     private Integer type;
 
     /**
-     * 优惠券类型
+     * 优惠券状态
      */
     private Integer status;
     /**
