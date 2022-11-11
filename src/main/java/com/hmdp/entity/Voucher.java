@@ -64,12 +64,12 @@ public class Voucher implements Serializable {
     private Long actualValue;
 
     /**
-     * 优惠券类型
+     * 优惠券类型:0,普通券；1,秒杀券
      */
     private Integer type;
 
     /**
-     * 优惠券状态
+     * 优惠券状态:1,上架; 2,下架; 3,过期
      */
     private Integer status;
     /**
