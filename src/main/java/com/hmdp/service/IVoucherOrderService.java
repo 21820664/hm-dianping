@@ -20,4 +20,11 @@ public interface IVoucherOrderService extends IService<VoucherOrder> {
 	 * @return com.hmdp.dto.Result
 	 */
 	Result seckillVoucher(Long voucherId);
+	
+	/**
+	 * @Description 创建优惠券订单
+	 * @Param [voucherId]
+	 * @return com.hmdp.dto.Result
+	 */
+	Result createVoucherOrder(Long voucherId);
 }
