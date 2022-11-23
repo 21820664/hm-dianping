@@ -57,13 +57,11 @@ public class VoucherOrderServiceImpl extends ServiceImpl<VoucherOrderMapper, Vou
 		SECKILL_SCRIPT.setResultType(Long.class);
 	}
 	
-	
-	
+
 	//异步处理线程池
 	private static final ExecutorService SECKILL_ORDER_EXECUTOR = Executors.newSingleThreadExecutor();
 	
-	//代理对象(线程的)
-	private IVoucherOrderService proxy;
+
 	
 	/**
 	 * 在类初始化之后执行，因为当这个类初始化好了之后，随时都是有可能要执行的
@@ -128,7 +126,7 @@ public class VoucherOrderServiceImpl extends ServiceImpl<VoucherOrderMapper, Vou
 					// 3.创建订单
 					createVoucherOrder(voucherOrder);
 					// 4.确认消息 XACK
-					stringRedisTemplate.opsForStream().acknowledge("s1", "g1", record.getId());
+					stringRedisTemplate.opsForStream().acknowledge("stream.orders", "g1", record.getId());
 				} catch (Exception e) {
 					log.error("处理订单异常", e);
 				}
@@ -182,7 +180,32 @@ public class VoucherOrderServiceImpl extends ServiceImpl<VoucherOrderMapper, Vou
 	 * @Param [voucherId]
 	 * @return com.hmdp.dto.Result
 	 */
+	//版本4:多线程使用Redis以及消息队列
+	@Override
+	public Result seckillVoucher(Long voucherId) {
+		Long userId = UserHolder.getUser().getId();
+		long orderId = redisIdWorker.nextId("order");
+		// 1.执行lua脚本
+		Long result = stringRedisTemplate.execute(
+				SECKILL_SCRIPT,
+				Collections.emptyList(),
+				voucherId.toString(), userId.toString(), String.valueOf(orderId)
+		);
+		int r = result.intValue();
+		// 2.判断结果是否为0
+		if (r != 0) {
+			// 2.1.不为0 ，代表没有购买资格
+			return Result.fail(r == 1 ? "库存不足" : "不能重复下单");
+		}
+		//x3.获取代理对象
+		//proxy = (IVoucherOrderService) AopContext.currentProxy();
+		// 3.返回订单id
+		return Result.ok(orderId);
+	}
+	
 	//版本3:多线程使用Redis以及阻塞队列
+	/*//代理对象(线程的)
+	private IVoucherOrderService proxy;
 	@Override
 	public Result seckillVoucher(Long voucherId) {
 		Long userId = UserHolder.getUser().getId();
@@ -200,23 +223,21 @@ public class VoucherOrderServiceImpl extends ServiceImpl<VoucherOrderMapper, Vou
 			return Result.fail(r == 1 ? "库存不足" : "不能重复下单");
 		}
 		//放入lua中解决
-		/*VoucherOrder voucherOrder = new VoucherOrder();
+		//VoucherOrder voucherOrder = new VoucherOrder();
 		// %2.3.订单id
 		//long orderId = redisIdWorker.nextId("order");
-		voucherOrder.setId(orderId);
+		//voucherOrder.setId(orderId);
 		// %2.4.用户id
-		voucherOrder.setUserId(userId);
+		//voucherOrder.setUserId(userId);
 		// %2.5.代金券id
-		voucherOrder.setVoucherId(voucherId);
+		//voucherOrder.setVoucherId(voucherId);
 		// %2.6.放入阻塞队列
-		orderTasks.add(voucherOrder);*/
+		//orderTasks.add(voucherOrder);
 		//3.获取代理对象
 		proxy = (IVoucherOrderService) AopContext.currentProxy();
 		//4.返回订单id
 		return Result.ok(orderId);
-	}
-	
-
+	}*/
 
 	//版本2:单线程使用Redis以及阻塞队列
 	/*@Override
