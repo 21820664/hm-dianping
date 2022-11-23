@@ -6,11 +6,8 @@ import com.baomidou.mybatisplus.extension.service.IService;
 
 /**
  * <p>
- *  服务类
+ *  优惠券订单服务
  * </p>
- *
- * @author 虎哥
- * @since 2021-12-22
  */
 public interface IVoucherOrderService extends IService<VoucherOrder> {
 	
@@ -21,10 +18,13 @@ public interface IVoucherOrderService extends IService<VoucherOrder> {
 	 */
 	Result seckillVoucher(Long voucherId);
 	
+
 	/**
 	 * @Description 创建优惠券订单
-	 * @Param [voucherId]
-	 * @return com.hmdp.dto.Result
+	 * @Param [voucherOrder]
+	 * @return void
+	 * //@Param [voucherId]
+	 * //@return com.hmdp.dto.Result
 	 */
-	Result createVoucherOrder(Long voucherId);
+	void createVoucherOrder(VoucherOrder voucherOrder);
 }

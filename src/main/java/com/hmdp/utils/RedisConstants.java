@@ -24,4 +24,5 @@ public class RedisConstants {
     public static final String FEED_KEY = HEAD + "feed:";
     public static final String SHOP_GEO_KEY = HEAD + "shop:geo:";
     public static final String USER_SIGN_KEY = HEAD + "sign:";
+    
 }

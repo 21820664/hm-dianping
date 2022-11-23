@@ -27,6 +27,8 @@ public class SimpleRedisLock implements ILock {
 	
 	private static final String KEY_PREFIX = "hmdp:lock:";
 	private static final String ID_PREFIX = UUID.randomUUID().toString(true) + "-";
+	
+	//静态代码块加载lua
 	private static final DefaultRedisScript<Long> UNLOCK_SCRIPT;
 	static {
 		UNLOCK_SCRIPT = new DefaultRedisScript<>();
