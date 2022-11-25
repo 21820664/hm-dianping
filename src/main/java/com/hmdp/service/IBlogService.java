@@ -41,4 +41,16 @@ public interface IBlogService extends IService<Blog> {
 	 * @return com.hmdp.dto.Result
 	 */
 	Result queryBlogLikes(Long id);
+	/**
+	 * @Description 好友关注-实现滚动分页查询收邮箱
+	 * @Param [max, offset]
+	 * @return com.hmdp.dto.Result
+	 */
+	Result queryBlogOfFollow(Long max, Integer offset);
+	/**
+	 * @Description 保存博客-并推送到粉丝收件箱
+	 * @Param [blog]
+	 * @return com.hmdp.dto.Result
+	 */
+	Result saveBlog(Blog blog);
 }
