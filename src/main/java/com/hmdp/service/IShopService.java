@@ -27,4 +27,11 @@ public interface IShopService extends IService<Shop> {
 	 * @return void
 	 */
 	void updateByIds(Shop shop);
+	
+	/**
+	 * 根据商铺类型分页查询商铺信息(可通过距离进行排序)
+	 * @Param [typeId, current, x, y]
+	 * @return com.hmdp.dto.Result
+	 */
+	Result queryShopByType(Integer typeId, Integer current, Double x, Double y);
 }
