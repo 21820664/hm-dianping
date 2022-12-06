@@ -105,7 +105,11 @@ class HmDianPingApplicationTests {
 	}
 	
 
-	
+	/**
+	 * Hyperloglog - UV统计
+	 * @Param []
+	 * @return void
+	 */
 	@Test
 	void testHyperLogLog() {
 		String[] values = new String[1000];
