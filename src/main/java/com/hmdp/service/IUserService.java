@@ -28,8 +28,17 @@ public interface IUserService extends IService<User> {
 	 */
 	Result login(LoginFormDTO loginForm, HttpSession session);
 	
+	/**
+	 * 当天签到功能
+	 * @Param []
+	 * @return com.hmdp.dto.Result
+	 */
 	Result sign();
-
+	/**
+	 * 签到统计功能(连续签到)
+	 * @Param []
+	 * @return com.hmdp.dto.Result
+	 */
 	Result signCount();
 	
 	

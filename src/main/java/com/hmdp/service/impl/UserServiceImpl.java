@@ -149,13 +149,14 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
 		// 5.获取本月截止今天为止的所有的签到记录，返回的是一个十进制的数字 BITFIELD sign:5:202203 GET u14 0
 		List<Long> result = stringRedisTemplate.opsForValue().bitField(
 				key,
-				BitFieldSubCommands.create()
+				BitFieldSubCommands.create()//创建BITFIELD子命令
 						.get(BitFieldSubCommands.BitFieldType.unsigned(dayOfMonth)).valueAt(0)
 		);
 		if (result == null || result.isEmpty()) {
 			// 没有任何签到结果
 			return Result.ok(0);
 		}
+		//第一个为空
 		Long num = result.get(0);
 		if (num == null || num == 0) {
 			return Result.ok(0);
@@ -163,7 +164,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
 		// 6.循环遍历
 		int count = 0;
 		while (true) {
-			// 6.1.让这个数字与1做与运算，得到数字的最后一个bit位  // 判断这个bit位是否为0
+			// 6.1.让这个数字与1做与运算，得到数字的最后一个bit位(它本身)  // 判断这个bit位是否为0
 			if ((num & 1) == 0) {
 				// 如果为0，说明未签到，结束
 				break;

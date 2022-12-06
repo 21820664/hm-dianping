@@ -112,11 +112,21 @@ public class UserController {
         return Result.ok(userDTO);
     }
     
+    /**
+     * 当日签到
+     * @Param []
+     * @return com.hmdp.dto.Result
+     */
     @PostMapping("/sign")
     public Result sign(){
         return userService.sign();
     }
     
+    /**
+     * 签到统计
+     * @Param []
+     * @return com.hmdp.dto.Result
+     */
     @GetMapping("/sign/count")
     public Result signCount(){
         return userService.signCount();
